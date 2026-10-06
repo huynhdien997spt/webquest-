@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebQuest đầu tiên của em</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff7e8;--ink:#24304a;--muted:#5d6b8a;--card:#ffffff;--line:#eadfca;
+  --blue:#4f7cff;--orange:#ff9a3c;--green:#25b374;--purple:#8a63f6;--pink:#e8559a;--red:#ee5a5a;--yellow:#ffc928;
+  --shadow:0 10px 30px rgba(36,48,74,.13);
+}
+*{box-sizing:border-box}
+html{font-size:20px}
+body{margin:0;font-family:"Nunito","Segoe UI",system-ui,-apple-system,Arial,sans-serif;color:var(--ink);
+  background:radial-gradient(circle at 8% 10%,#ffe9b8 0,transparent 32%),radial-gradient(circle at 92% 90%,#d9e6ff 0,transparent 34%),var(--bg);
+  min-height:100vh;transition:background .4s,color .4s}
+body.night{background:#101a33;color:#f3f6ff}
+#app{max-width:1180px;margin:0 auto;padding:12px 18px 18px;display:flex;flex-direction:column;min-height:100vh}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 4px}
+.brand{font-weight:900;font-size:1.05rem}
+.who{font-size:.8rem;color:var(--muted);font-weight:700}
+body.night .who{color:#aab8e0}
+/* progress */
+#progress{display:flex;gap:8px;margin:6px 0 10px}
+#progress.hidden{visibility:hidden}
+.pstep{flex:1;text-align:center;font-size:.72rem;font-weight:800;color:var(--muted);position:relative}
+.pstep .bar{height:10px;border-radius:99px;background:#e9e1d0;overflow:hidden;margin-bottom:4px}
+.pstep .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:99px;transition:width .5s}
+.pstep.done .bar i{width:100%}
+.pstep.cur{color:var(--ink)}
+.pstep.cur .bar i{width:var(--w,50%)}
+body.night .pstep{color:#8ea0d0}
+body.night .pstep .bar{background:#24325c}
+/* banner */
+#banner{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin-bottom:8px;min-height:0}
+.role{background:#fff;border:2px solid var(--line);border-radius:99px;padding:6px 18px;font-size:.82rem;box-shadow:0 3px 10px rgba(36,48,74,.07)}
+.role.solo{background:#f2ecff;border-color:#d9ccff}
+.swap{background:var(--yellow);color:#3b2a00;font-weight:900;border-radius:99px;padding:6px 18px;font-size:.9rem;animation:pulse 1s ease-in-out 3}
+@keyframes pulse{50%{transform:scale(1.07)}}
+main{flex:1;display:flex;flex-direction:column;justify-content:flex-start}
+.card{background:var(--card);border-radius:28px;box-shadow:var(--shadow);padding:26px 34px;animation:rise .45s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.center{text-align:center}
+h1{font-size:2.3rem;line-height:1.15;margin:.2em 0;font-weight:900}
+h2{font-size:1.55rem;line-height:1.25;margin:.2em 0 .5em;font-weight:900}
+h3{font-size:1.15rem;margin:.3em 0;font-weight:800}
+p{margin:.45em 0;line-height:1.45}
+.lead{font-size:1.2rem}.lead.strong{font-weight:800}
+.bigemoji{font-size:4rem;line-height:1}
+.bounce{animation:bounce 1.6s ease-in-out infinite}
+@keyframes bounce{50%{transform:translateY(-10px)}}
+.teacher{color:var(--muted);font-size:.9rem}
+.form{display:grid;grid-template-columns:1fr 1fr 160px;gap:14px;margin:16px 0 4px;text-align:left}
+label{font-weight:800;font-size:.8rem;color:var(--muted);display:block}
+input[type=text],input:not([type]),textarea{width:100%;font:inherit;font-size:1rem;font-weight:700;color:var(--ink);padding:10px 14px;margin-top:4px;border:3px solid var(--line);border-radius:16px;background:#fffdf8;outline:none}
+input:focus,textarea:focus{border-color:var(--blue)}
+.bar{display:flex;justify-content:center;gap:12px;margin-top:20px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:900;font-size:1.05rem;border:0;border-radius:99px;padding:12px 30px;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--blue),var(--purple));box-shadow:0 6px 0 #3a54b3,0 10px 20px rgba(79,124,255,.3);transition:transform .1s,box-shadow .1s}
+.btn:hover:not(:disabled){transform:translateY(-2px)}
+.btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #3a54b3}
+.btn:disabled{background:#cfd5e4;box-shadow:0 6px 0 #aab2c8;cursor:not-allowed;color:#f4f6fb}
+.btn.big{font-size:1.25rem;padding:14px 38px}
+.btn.alt{background:linear-gradient(135deg,var(--orange),#ff6b6b);box-shadow:0 6px 0 #c4602a}
+.btn.ghost{background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--line);border:2px solid var(--line)}
+.btn.sm{font-size:.8rem;padding:6px 14px;box-shadow:0 3px 0 var(--line)}
+/* situation */
+.bubble{background:#fff4d6;border:3px dashed #f0c25a;border-radius:24px;padding:18px 24px;font-size:1.25rem;margin:10px 0}
+.pw{display:inline-block;font-family:"Courier New",monospace;font-weight:900;background:#24304a;color:#fff;border-radius:10px;padding:2px 12px}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:12px}
+.choice{font:inherit;font-weight:900;font-size:1.2rem;padding:22px 10px;border-radius:22px;border:4px solid var(--line);background:#fff;cursor:pointer;transition:.15s}
+.choice:hover{transform:translateY(-3px);border-color:var(--blue)}
+.choice.sel{border-color:var(--blue);background:#eaf0ff;transform:scale(1.03)}
+.choice span{display:block;font-size:2.2rem}
+.note{background:#eaf7f0;border-left:6px solid var(--green);border-radius:14px;padding:10px 16px;margin-top:14px;font-weight:800}
+/* challenge */
+.challenge{background:linear-gradient(135deg,#fff0d6,#ffe1ec);border-radius:26px;padding:26px;font-size:1.4rem;font-weight:800;margin:14px 0;border:4px solid #ffc27a}
+.tag{display:inline-block;background:var(--orange);color:#fff;font-weight:900;border-radius:99px;padding:3px 18px;letter-spacing:.06em;font-size:.9rem}
+/* dnd */
+.dnd{display:grid;gap:12px}
+.tray{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;min-height:64px;padding:12px;background:#f6f1e5;border-radius:20px;border:3px dashed var(--line)}
+.chip{background:#fff;border:3px solid #cdbfa0;border-radius:16px;padding:10px 16px;font-weight:900;font-size:1.05rem;cursor:grab;user-select:none;box-shadow:0 4px 0 #cdbfa0;transition:transform .12s;max-width:100%}
+.chip small{display:block;font-weight:700;color:var(--muted);font-size:.7rem}
+.chip.pw-chip{font-family:"Courier New",monospace;font-size:1.25rem}
+.chip:hover{transform:translateY(-2px)}
+.chip.sel{border-color:var(--blue);background:#eaf0ff;box-shadow:0 4px 0 var(--blue);transform:scale(1.05)}
+.chip.placed{cursor:default;box-shadow:none;margin:4px}
+.chip.ok{border-color:var(--green);background:#e7f8ef}
+.chip.shake{animation:shake .45s;border-color:var(--red)}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.zones{display:grid;gap:12px}
+.zones.two{grid-template-columns:1fr 1fr}
+.zone{border:4px dashed #cbbd9c;border-radius:22px;padding:10px 14px;min-height:96px;background:#fffdf8;transition:.15s}
+.zone.over{background:#eaf0ff;border-color:var(--blue)}
+.zone .zlabel{font-weight:900;font-size:1.05rem;margin-bottom:4px}
+.zone .zdrop{display:flex;flex-wrap:wrap;gap:6px;min-height:40px}
+.zone.red{border-color:#f3a0a0;background:#fff3f3}.zone.green{border-color:#8fdab6;background:#effaf4}
+.zones.rows .zone{display:grid;grid-template-columns:230px 1fr;align-items:center;min-height:62px;padding:6px 14px}
+.zones.rows .zlabel{margin:0}
+.fb{min-height:52px;margin-top:10px;padding:10px 18px;border-radius:18px;font-weight:800;font-size:1rem;background:#f1f4fb;color:var(--muted)}
+.fb.ok{background:#e4f7ec;color:#136b43}.fb.hint{background:#fff1d4;color:#7a4b00}.fb.no{background:#ffe5e5;color:#8d2323}
+/* resource infographic */
+.info{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:16px 0}
+.icard{background:#f2ecff;border-radius:22px;padding:16px 8px;text-align:center;font-weight:900;font-size:.9rem;animation:pop .5s both}
+.icard span{display:block;font-size:2.4rem;margin-bottom:4px}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+.pwhead{font-size:1.7rem;font-weight:900;text-align:center}
+/* inputs */
+.advice{display:grid;gap:12px;margin:10px 0}
+.advice .row{display:grid;grid-template-columns:48px 1fr;align-items:center;gap:10px}
+.num{width:48px;height:48px;border-radius:50%;background:var(--yellow);display:grid;place-items:center;font-weight:900;font-size:1.3rem}
+.small{font-size:.8rem;color:var(--muted)}
+/* quiz */
+.qn{font-weight:900;color:var(--blue);font-size:.85rem;letter-spacing:.05em}
+.think{color:var(--muted);font-weight:700;font-size:.85rem}
+.opts{display:grid;gap:12px;margin:14px 0}
+.opts.grid{grid-template-columns:1fr 1fr}
+.opt{font:inherit;text-align:left;font-weight:800;font-size:1.1rem;padding:16px 22px;border-radius:20px;border:4px solid var(--line);background:#fff;cursor:pointer;transition:.15s;display:flex;gap:12px;align-items:center}
+.opt:hover{border-color:var(--blue);transform:translateX(3px)}
+.opt.sel{border-color:var(--blue);background:#eaf0ff}
+.opt.right{border-color:var(--green);background:#e7f8ef}
+.opt.wrong{border-color:var(--red);background:#ffecec;animation:shake .45s}
+.opt .k{width:34px;height:34px;border-radius:50%;background:#f1eadb;display:grid;place-items:center;flex:none}
+/* flow diagram */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:6px;margin:18px 0;flex-wrap:nowrap}
+.fnode{flex:1 1 0;min-width:0;border-radius:22px;padding:14px 8px;text-align:center;color:#fff;font-weight:900;font-size:.95rem;animation:pop .6s both;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.fnode .fi{font-size:2.3rem}
+.fnode small{font-weight:800;opacity:.95;font-size:.78rem;line-height:1.3}
+.farrow{align-self:center;font-size:1.6rem;color:var(--muted);animation:pop .6s both}
+.c-blue{background:var(--blue)}.c-orange{background:var(--orange)}.c-green{background:var(--green)}.c-purple{background:var(--purple)}.c-pink{background:var(--pink)}
+.big-reveal{font-size:1.6rem;font-weight:900;text-align:center;color:var(--purple);animation:pop .8s 2s both}
+.def{background:linear-gradient(135deg,#e8efff,#f2e9ff);border-radius:24px;padding:22px 28px;font-size:1.3rem;font-weight:800;line-height:1.45;margin:12px 0}
+.shout{font-size:1.8rem;font-weight:900;text-align:center;color:var(--pink);margin:16px 0 8px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tool{background:#fff;border:3px solid var(--line);border-radius:16px;padding:8px 16px;font-weight:800}
+.comp{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:14px 0}
+.cc{border-radius:22px;padding:16px 10px;color:#fff;text-align:center;animation:pop .5s both}
+.cc .fi{font-size:2.5rem}.cc b{display:block;font-size:1rem}.cc .q{font-size:.95rem;font-weight:800;margin-top:4px;background:rgba(255,255,255,.22);border-radius:12px;padding:4px 6px}
+.cc small{display:block;font-weight:700;margin-top:6px;font-size:.72rem;opacity:.95}
+.stack{display:flex;flex-direction:column;align-items:center;gap:2px}
+/* timer */
+.timer{--p:0;width:150px;height:150px;border-radius:50%;margin:10px auto;display:grid;place-items:center;background:conic-gradient(var(--blue) calc(var(--p)*1%),#e6ebf8 0);position:relative}
+.timer::after{content:"";position:absolute;inset:14px;background:#fff;border-radius:50%}
+body.night .timer::after{background:#101a33}
+body.night .timer{background:conic-gradient(var(--yellow) calc(var(--p)*1%),#24325c 0)}
+.timer span{position:relative;z-index:1;font-size:2.2rem;font-weight:900}
+.hidebox{text-align:center;padding:36px;border-radius:24px;background:#eef2fb;font-size:1.4rem;font-weight:900;color:var(--muted);animation:pop .4s}
+/* leave screen */
+.leave h1{font-size:2.8rem}
+.leave .bigemoji{font-size:6rem}
+body.night .card{background:#17244a;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+body.night .btn.ghost{background:#17244a;color:#fff;border-color:#2c3d78;box-shadow:0 4px 0 #2c3d78}
+/* mindmap */
+.mm{width:100%;max-height:48vh}
+.mm text{font-family:inherit;font-weight:900;fill:#fff}
+.dd{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.dd ul{margin:0;padding:12px 18px;list-style:none;border-radius:18px;font-weight:800;font-size:.9rem}
+.dd .y{background:#e7f8ef}.dd .n{background:#ffecec}
+.dd li{margin:3px 0}
+.hint-box{background:#fff4d6;border-radius:18px;padding:12px 18px;font-weight:800;margin-top:10px}
+.topics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+.topic{font:inherit;font-weight:900;padding:18px 8px;border-radius:20px;border:4px solid var(--line);background:#fff;cursor:pointer;transition:.15s;font-size:.95rem}
+.topic span{display:block;font-size:2.2rem}
+.topic:hover{border-color:var(--green);transform:translateY(-3px)}
+.topic.sel{border-color:var(--green);background:#e7f8ef}
+.fill{display:grid;gap:10px;margin:10px 0}
+.fcard{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center;border-radius:20px;padding:10px 16px;background:#fff;border:4px solid var(--line)}
+.fcard .ic{font-size:2.2rem;text-align:center}
+.fcard b{font-size:1.05rem}
+.fcard .lim{display:inline-block;background:var(--yellow);border-radius:99px;padding:0 10px;font-size:.75rem;font-weight:900;margin-left:6px}
+.fcard .ex{font-size:.8rem;color:var(--muted);font-weight:700}
+.fcard.done{border-color:var(--green);background:#f1fbf6}
+.tick{font:inherit;font-weight:900;border:3px solid var(--line);background:#fff;border-radius:14px;padding:6px 12px;cursor:pointer;font-size:.85rem}
+.tick.on{background:var(--green);color:#fff;border-color:var(--green)}
+.starters{list-style:none;padding:0;margin:10px 0;display:grid;gap:8px}
+.starters li{background:#eef2fb;border-radius:16px;padding:10px 18px;font-weight:800}
+.starters li b{color:var(--purple)}
+.rules{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0}
+.rules span{background:#fff4d6;border-radius:99px;padding:6px 16px;font-weight:900}
+.stars{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.star{font:inherit;font-weight:800;text-align:left;border:3px solid var(--line);background:#fff;border-radius:16px;padding:8px 14px;cursor:pointer;flex:1 1 100%;font-size:.95rem}
+.star.sel{border-color:var(--yellow);background:#fff8dc}
+.mini-tabs{display:flex;gap:8px;margin-bottom:6px}
+.mini-tabs span{padding:4px 14px;border-radius:99px;background:#e9e1d0;font-weight:900;font-size:.8rem}
+.mini-tabs span.on{background:var(--blue);color:#fff}
+.chain{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin:14px 0}
+.chain .it{background:#eef2fb;border-radius:18px;padding:10px 16px;font-weight:900}
+.chain .ar{font-size:1.4rem;color:var(--muted)}
+.closing{font-size:1.2rem;font-weight:800;line-height:1.5}
+.finale{font-size:1.8rem;font-weight:900;color:var(--green);margin-top:10px}
+.confetti{position:fixed;top:-40px;font-size:1.8rem;animation:fall linear forwards;pointer-events:none;z-index:5}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.8}}
+.foot{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:.7rem;color:var(--muted);font-weight:700}
+.foot select{font:inherit;font-size:.7rem;padding:2px 6px;border-radius:8px;border:1px solid var(--line)}
+.foot button{font:inherit;font-size:.7rem;background:none;border:1px solid var(--line);border-radius:8px;padding:2px 8px;cursor:pointer;color:var(--muted)}
+body.night .foot{color:#8ea0d0}
+@media (max-width:900px){
+  html{font-size:17px}
+  .form,.choices,.info,.comp,.topics,.dd,.opts.grid{grid-template-columns:1fr 1fr}
+  .form{grid-template-columns:1fr}
+  .flow{flex-direction:column}.farrow{transform:rotate(90deg)}
+  .zones.rows .zone{grid-template-columns:1fr}
+  .zones.two{grid-template-columns:1fr}
+  .card{padding:20px}
+  h1{font-size:1.8rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top"><div class="brand">🌍 WebQuest đầu tiên của em</div><div class="who" id="who"></div></header>
+  <nav id="progress" class="hidden" aria-label="Tiến trình"></nav>
+  <div id="banner"></div>
+  <main id="stage"></main>
+  <footer class="foot">
+    <span>Giáo viên: Huỳnh Văn Diễn</span>
+    <label style="display:inline">Chuyển màn hình: <select id="jump"></select></label>
+    <button id="reset" type="button">Làm lại từ đầu</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ---------- tiện ích ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const html=s=>{const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstElementChild};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const KEY='webquest_dau_tien_v1';
+const STAGES=['Trải nghiệm','Nhận ra','Hiểu','Thử thiết kế','Vẽ vào tập'];
+const fresh=()=>({idx:0,last:0,n1:'',n2:'',cls:'',predict:'',advice:['','',''],newpw:'',topic:'',exit:{}});
+let S=fresh();
+try{const r=localStorage.getItem(KEY);if(r){S=Object.assign(fresh(),JSON.parse(r));S.idx=0}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+let timers=[],prevRole=0;
+function clearTimers(){timers.forEach(clearInterval);timers=[]}
+function countdown(el,secs,onTick,onEnd){
+  let left=secs;
+  const paint=()=>{const m=Math.floor(left/60),s=left%60;el.querySelector('span').textContent=m+':'+String(s).padStart(2,'0');el.style.setProperty('--p',((secs-left)/secs)*100)};
+  paint();
+  const id=setInterval(()=>{left--;paint();if(left<=0){clearInterval(id);onEnd&&onEnd()}},1000);
+  timers.push(id);
+  return {skip(){clearInterval(id);left=0;paint();onEnd&&onEnd()}};
+}
+
+/* ---------- thành phần dùng chung ---------- */
+const COMP=[
+ {k:'intro',icon:'🌍',name:'GIỚI THIỆU',q:'Có vấn đề gì?',d:'Tạo bối cảnh',c:'blue'},
+ {k:'task',icon:'🎯',name:'NHIỆM VỤ',q:'Người học phải làm gì?',d:'Nêu mục tiêu hoặc sản phẩm',c:'orange'},
+ {k:'proc',icon:'🔍',name:'QUÁ TRÌNH',q:'Làm bằng cách nào?',d:'Các bước thực hiện',c:'green'},
+ {k:'src',icon:'📚',name:'NGUỒN HỌC',q:'Có thể học từ đâu?',d:'Sách, hình ảnh, website, video, quan sát, người khác',c:'purple'},
+ {k:'prod',icon:'🚀',name:'SẢN PHẨM',q:'Cuối cùng tạo được gì?',d:'Poster, sơ đồ, video, chương trình, bài viết…',c:'pink'}
+];
+function flow(nodes){
+  return '<div class="flow">'+nodes.map((n,i)=>
+    `<div class="fnode c-${n.c}" style="animation-delay:${i*.35}s"><div class="fi">${n.icon}</div><b>${n.title}</b>${n.sub?`<small>${n.sub}</small>`:''}</div>`+
+    (i<nodes.length-1?`<div class="farrow" style="animation-delay:${i*.35+.2}s">➜</div>`:'')).join('')+'</div>';
+}
+function nextBar(box,label,disabled,extra){
+  const bar=html('<div class="bar"></div>');
+  const b=html(`<button class="btn big" type="button">${label}</button>`);
+  b.disabled=!!disabled;
+  b.addEventListener('click',()=>go(S.idx+1));
+  bar.append(b);
+  if(extra)bar.append(extra);
+  box.append(bar);
+  return b;
+}
+/* kéo thả có phản hồi gợi ý; bấm chọn rồi bấm ô để thay thế khi không kéo được */
+function dnd(box,o){
+  const wrap=html('<div class="dnd"><div class="tray"></div><div class="zones '+(o.zcls||'')+'"></div></div>');
+  const fb=html(`<div class="fb" aria-live="polite">${o.tip||''}</div>`);
+  box.append(wrap,fb);
+  const tray=$('.tray',wrap),zbox=$('.zones',wrap);
+  const byId={},chips={},zel={};
+  let sel=null,done=0;
+  const say=(t,m)=>{fb.className='fb '+t;fb.innerHTML=m};
+  const clearSel=()=>{if(sel&&chips[sel])chips[sel].classList.remove('sel');sel=null};
+  function place(id,z){
+    const it=byId[id],c=chips[id];
+    if(!it||c.classList.contains('placed'))return;
+    clearSel();
+    if(it.zone===z){
+      $('.zdrop',zel[z]).append(c);c.classList.add('placed','ok');c.draggable=false;done++;
+      say('ok',it.ok);
+      if(done===o.items.length)setTimeout(()=>o.onDone&&o.onDone(),500);
+    }else{
+      c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),500);
+      say('hint',(it.hints&&it.hints[z])||it.hint);
+    }
+  }
+  o.zones.forEach(z=>{
+    const d=html(`<div class="zone ${z.cls||''}"><div class="zlabel">${z.label}</div><div class="zdrop"></div></div>`);
+    zel[z.id]=d;zbox.append(d);
+    d.addEventListener('dragover',e=>{e.preventDefault();d.classList.add('over')});
+    d.addEventListener('dragleave',()=>d.classList.remove('over'));
+    d.addEventListener('drop',e=>{e.preventDefault();d.classList.remove('over');const id=e.dataTransfer.getData('text/plain')||sel;if(id)place(id,z.id)});
+    d.addEventListener('click',()=>{if(sel)place(sel,z.id)});
+  });
+  (o.shuffle?shuffle(o.items):o.items).forEach(it=>{
+    byId[it.id]=it;
+    const c=html(`<div class="chip ${it.cls||''}" draggable="true" tabindex="0" role="button">${it.html}</div>`);
+    chips[it.id]=c;tray.append(c);
+    c.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',it.id);sel=it.id});
+    c.addEventListener('click',e=>{if(c.classList.contains('placed'))return;e.stopPropagation();const was=sel===it.id;clearSel();if(!was){sel=it.id;c.classList.add('sel');say('',' 👉 Bấm vào ô em muốn đặt vào.')}});
+    c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();c.click()}});
+  });
+}
+function confetti(){
+  const em=['🎉','⭐','🌟','✨','🎊','💡'];
+  for(let i=0;i<28;i++){
+    const s=document.createElement('span');s.className='confetti';s.textContent=em[i%em.length];
+    s.style.left=Math.random()*100+'vw';s.style.animationDuration=(3+Math.random()*3)+'s';s.style.animationDelay=Math.random()*1.5+'s';
+    document.body.append(s);setTimeout(()=>s.remove(),8000);
+  }
+}
+
+/* ---------- danh sách màn hình ---------- */
+const screens=[];
+function add(t,stage,role,render,opt){screens.push(Object.assign({t,stage,role,render},opt||{}))}
+
+/* Trang đầu */
+add('Trang đầu',0,0,box=>{
+  box.append(html(`<section class="card hero center">
+    <div class="bigemoji bounce">🌍</div>
+    <h1>WEBQUEST ĐẦU TIÊN CỦA EM</h1>
+    <p class="lead">Hôm nay em sẽ không chỉ học “WebQuest là gì”.</p>
+    <p class="lead strong">Em sẽ tự mình trải nghiệm, khám phá và sau đó tự vẽ một WebQuest của riêng mình.</p>
+    <p class="teacher">Giáo viên: <b>Huỳnh Văn Diễn</b></p>
+    <div class="form">
+      <label>Họ tên bạn 1<input id="n1" autocomplete="off" maxlength="40"></label>
+      <label>Họ tên bạn 2<input id="n2" autocomplete="off" maxlength="40"></label>
+      <label>Lớp<input id="cls" autocomplete="off" maxlength="12"></label>
+    </div>
+    <div class="bar"><button class="btn big" id="go" type="button" disabled>🚀 BẮT ĐẦU HÀNH TRÌNH</button></div>
+  </section>`));
+  const n1=$('#n1'),n2=$('#n2'),cls=$('#cls'),go_=$('#go');
+  n1.value=S.n1;n2.value=S.n2;cls.value=S.cls;
+  const chk=()=>{go_.disabled=!(n1.value.trim()&&n2.value.trim())};
+  [n1,n2,cls].forEach(i=>i.addEventListener('input',chk));chk();
+  go_.addEventListener('click',()=>{S.n1=n1.value.trim();S.n2=n2.value.trim();S.cls=cls.value.trim();S.last=1;go(1)});
+  if(S.last>1){
+    const r=html(`<button class="btn ghost sm" type="button">↩️ Tiếp tục phần đang làm dở</button>`);
+    r.addEventListener('click',()=>{S.n1=n1.value.trim()||S.n1;S.n2=n2.value.trim()||S.n2;go(S.last)});
+    $('.bar',box).append(r);
+  }
+});
+
+/* Thông báo 2 HS / 1 máy */
+add('Hai bạn cùng suy nghĩ',0,0,box=>{
+  box.append(html(`<section class="card center">
+    <div class="bigemoji">👥</div>
+    <h2>Hai bạn hãy cùng suy nghĩ.</h2>
+    <p class="lead">🖱️ Một bạn thao tác &nbsp;–&nbsp; 👀 một bạn quan sát và giải thích.</p>
+    <p class="lead">Hãy cùng nhau tìm ra câu trả lời, <b>không chỉ bấm cho xong.</b></p>
+    <p class="note">Bạn thao tác đầu tiên: <b>${esc(S.n1)}</b>. Khi màn hình nhắc 🔄, hai bạn đổi vai nhé!</p>
+  </section>`));
+  nextBar(box,'Sẵn sàng rồi! ➜');
+});
+
+/* ===== PHẦN 1 ===== */
+add('1.1 Tình huống',1,1,box=>{
+  box.append(html(`<section class="card center">
+    <p class="tag">🌍 TÌNH HUỐNG</p>
+    <div class="bubble">Bạn An thường đặt mật khẩu là <span class="pw">123456</span> vì bạn nghĩ rằng mật khẩu dễ nhớ sẽ tiện hơn.
+      <br><b>Theo em, cách này có an toàn không?</b></div>
+    <div class="choices">
+      <button class="choice" data-v="an toàn" type="button"><span>✅</span>An toàn</button>
+      <button class="choice" data-v="không an toàn" type="button"><span>❌</span>Không an toàn</button>
+      <button class="choice" data-v="chưa chắc" type="button"><span>🤔</span>Chưa chắc</button>
+    </div><div id="after"></div>
+  </section>`));
+  const nb=nextBar(box,'Cùng điều tra ➜',true);
+  const show=()=>{
+    $('#after').innerHTML='<div class="note">Hãy giữ lại dự đoán của em. Bây giờ chúng ta sẽ cùng điều tra.</div>';
+    nb.disabled=false;
+  };
+  box.querySelectorAll('.choice').forEach(b=>{
+    if(S.predict===b.dataset.v){b.classList.add('sel');show()}
+    b.addEventListener('click',()=>{
+      box.querySelectorAll('.choice').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel');S.predict=b.dataset.v;save();show();
+    });
+  });
+});
+
+add('1.2 Nhiệm vụ',1,1,box=>{
+  box.append(html(`<section class="card center">
+    <div class="bigemoji bounce">🎯</div>
+    <p class="tag">THỬ THÁCH</p>
+    <div class="challenge">Hãy giúp An tạo ra một mật khẩu an toàn hơn và đưa ra <u>3 lời khuyên</u> giúp bạn bảo vệ tài khoản.</div>
+  </section>`));
+  nextBar(box,'🔍 Bắt đầu khám phá');
+});
+
+add('1.3 Khám phá (kéo thả)',1,1,box=>{
+  const sec=html(`<section class="card"><h2>🔍 Khám phá: mật khẩu nào dễ đoán?</h2>
+    <p class="think">Kéo mỗi mật khẩu vào ô phù hợp (hoặc bấm vào mật khẩu, rồi bấm vào ô). Hai bạn cùng bàn bạc nhé!</p></section>`);
+  box.append(sec);
+  const nb=nextBar(box,'Tiếp tục ➜',true);
+  dnd(sec,{
+    zcls:'two',
+    tip:'💬 Phản hồi sẽ hiện ở đây.',
+    zones:[{id:'red',label:'🔴 DỄ ĐOÁN',cls:'red'},{id:'green',label:'🟢 KHÓ ĐOÁN HƠN',cls:'green'}],
+    items:[
+      {id:'a',cls:'pw-chip',html:'123456',zone:'red',ok:'👍 Đúng rồi! Dãy số liền nhau là thứ đầu tiên người xấu thử.',hint:'💡 Hãy thử xem: đây có phải dãy số ai cũng nghĩ ra đầu tiên không?'},
+      {id:'b',cls:'pw-chip',html:'an2009',zone:'red',ok:'👍 Chính xác! Tên + năm sinh là thông tin rất dễ biết.',hint:'💡 Mật khẩu này có chứa thông tin rất dễ đoán không? Hãy nhìn kĩ phần chữ và phần số.'},
+      {id:'c',cls:'pw-chip',html:'Password',zone:'red',ok:'👍 Đúng! Đây là một từ thông dụng, ai cũng thử.',hint:'💡 Đây là một từ rất quen thuộc. Người xấu có thử từ này sớm không?'},
+      {id:'d',cls:'pw-chip',html:'M@iXanh#26',zone:'green',ok:'👍 Em đã nhận ra mật khẩu càng khó đoán thì càng an toàn hơn. Nó có chữ hoa, ký hiệu và số.',hint:'💡 Hãy đếm xem mật khẩu này có những loại ký tự nào. Nó có giống dãy số hay từ quen thuộc không?'},
+      {id:'e',cls:'pw-chip',html:'abc123',zone:'red',ok:'👍 Đúng! Chữ cái và số xếp theo thứ tự rất dễ đoán.',hint:'💡 Hãy thử xem các ký tự trong mật khẩu này có xếp theo thứ tự quen thuộc không?'}
+    ],
+    onDone(){nb.disabled=false;sec.querySelector('.fb').innerHTML+=' <br>🎉 Xong rồi! Hai bạn hãy nói với nhau: vì sao mật khẩu xanh khó đoán hơn?'}
+  });
+});
+
+add('1.4 Nguồn học',1,2,box=>{
+  const items=[['📏','Đủ dài'],['🎲','Khó đoán'],['🙅','Không dùng thông tin quá dễ biết'],['🔣','Kết hợp nhiều loại kí tự'],['🔑','Không dùng một mật khẩu ở mọi nơi']];
+  box.append(html(`<section class="card"><p class="tag" style="background:var(--purple)">📚 NGUỒN HỌC</p>
+    <div class="pwhead">🔐 MẬT KHẨU AN TOÀN</div>
+    <div class="info">${items.map((it,i)=>`<div class="icard" style="animation-delay:${i*.2}s"><span>${it[0]}</span>${it[1]}</div>`).join('')}</div>
+    <p class="center small">Em đã thử trước, bây giờ nguồn học này giúp em kiểm tra lại suy nghĩ của mình.</p></section>`));
+  nextBar(box,'✍️ Làm sản phẩm ➜');
+});
+
+add('1.5 Sản phẩm mini',1,2,box=>{
+  box.append(html(`<section class="card"><p class="tag" style="background:var(--pink)">🚀 SẢN PHẨM MINI</p>
+    <h2>Ba lời khuyên dành cho An</h2>
+    <div class="advice">
+      ${[0,1,2].map(i=>`<div class="row"><div class="num">${i+1}</div><input id="ad${i}" maxlength="140" placeholder="Viết lời khuyên ${i+1} bằng lời của hai bạn…"></div>`).join('')}
+      <div class="row"><div class="num">🔐</div><input id="npw" maxlength="40" placeholder="(Không bắt buộc) Mật khẩu mới gợi ý cho An – đừng dùng mật khẩu thật của em!"></div>
+    </div></section>`));
+  const nb=nextBar(box,'Hoàn thành thử thách ✔',true);
+  const ins=[0,1,2].map(i=>$('#ad'+i));
+  ins.forEach((el,i)=>el.value=S.advice[i]||'');
+  $('#npw').value=S.newpw||'';
+  const chk=()=>{S.advice=ins.map(x=>x.value.trim());S.newpw=$('#npw').value.trim();save();nb.disabled=!S.advice.every(v=>v.length>=5)};
+  ins.concat($('#npw')).forEach(i=>i.addEventListener('input',chk));chk();
+});
+
+add('1.6 Hoàn thành',1,2,box=>{
+  confetti();
+  const pred=S.predict?`Lúc đầu em dự đoán: <b>“${esc(S.predict)}”</b>. Bây giờ ý kiến của hai bạn có thay đổi không?`:'';
+  box.append(html(`<section class="card center">
+    <div class="bigemoji bounce">🎉</div><h1>THỬ THÁCH HOÀN THÀNH</h1>
+    <p class="lead">${pred}</p>
+    <div class="bubble"><b>Các em có nhận ra mình vừa trải qua một hành trình không?</b></div></section>`));
+  nextBar(box,'🤔 CHÚNG TA VỪA HỌC THEO CÁCH NÀO?');
+});
+
+/* ===== PHẦN 2 ===== */
+function quizSingle(n,title,opts,ans,okMsg,hint){
+  return box=>{
+    const sec=html(`<section class="card"><div class="qn">CÂU ${n}/4</div><h2>${title}</h2>
+      <p class="think">👥 Bàn bạc với bạn bên cạnh rồi hãy chọn nhé.</p><div class="opts"></div><div class="fb"></div></section>`);
+    box.append(sec);
+    const nb=nextBar(box,'Câu tiếp theo ➜',true);
+    const fb=$('.fb',sec);let ok=false;
+    opts.forEach((t,i)=>{
+      const k='ABCD'[i];
+      const b=html(`<button type="button" class="opt"><span class="k">${k}</span>${t}</button>`);
+      b.addEventListener('click',()=>{
+        if(ok)return;
+        if(k===ans){ok=true;b.classList.add('right');fb.className='fb ok';fb.innerHTML=okMsg;nb.disabled=false}
+        else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),500);fb.className='fb hint';fb.innerHTML=hint}
+      });
+      $('.opts',sec).append(b);
+    });
+  };
+}
+add('2.1 Lúc đầu gặp gì?',2,1,quizSingle(1,'Lúc đầu, các em gặp điều gì?',['Một bài giảng dài','Một vấn đề','Một bài kiểm tra'],'B','👍 Đúng! Chúng ta bắt đầu từ chuyện của bạn An – một <b>vấn đề</b>.','💡 Hãy nhớ lại màn hình đầu tiên: có ai giảng bài hay phát đề kiểm tra không?'));
+add('2.2 Sau đó nhận gì?',2,2,quizSingle(2,'Sau đó các em nhận được gì?',['Một nhiệm vụ','Một đoạn để chép','Một điểm số'],'A','👍 Đúng! Thử thách giúp An là một <b>nhiệm vụ</b> rõ ràng.','💡 Màn hình “THỬ THÁCH” yêu cầu các em làm gì? Có phải chép hay chấm điểm không?'));
+
+add('2.3 Đã làm gì?',2,1,box=>{
+  const opts=[['👀 Quan sát',1],['🧪 Thử',1],['💭 Suy nghĩ',1],['💬 Thảo luận',1],['📚 Dùng thông tin hỗ trợ',1],['✍️ Chép nguyên bài giảng',0],['😴 Ngồi nghe đọc một mình',0]];
+  const sec=html(`<section class="card"><div class="qn">CÂU 3/4</div><h2>Các em đã làm gì để giải quyết nhiệm vụ?</h2>
+    <p class="think">Chọn tất cả những việc hai bạn thật sự đã làm.</p><div class="opts grid"></div><div class="fb"></div></section>`);
+  box.append(sec);
+  const nb=nextBar(box,'Câu cuối ➜',true);
+  const chosen=new Set();
+  opts.forEach((o,i)=>{
+    const b=html(`<button type="button" class="opt">${o[0]}</button>`);
+    b.addEventListener('click',()=>{if(chosen.has(i)){chosen.delete(i);b.classList.remove('sel')}else{chosen.add(i);b.classList.add('sel')}});
+    $('.opts',sec).append(b);
+  });
+  const chk=html('<button class="btn alt" type="button">Kiểm tra</button>');
+  $('.bar',box).prepend(chk);
+  chk.addEventListener('click',()=>{
+    const fb=$('.fb',sec);
+    const wrongPicked=[...chosen].some(i=>!opts[i][1]);
+    const missed=opts.some((o,i)=>o[1]&&!chosen.has(i));
+    if(!wrongPicked&&!missed){fb.className='fb ok';fb.innerHTML='👍 Tuyệt! Quan sát, thử, suy nghĩ, thảo luận và dùng thông tin hỗ trợ – đó là cách <b>khám phá</b>.';nb.disabled=false;chk.disabled=true}
+    else if(wrongPicked){fb.className='fb hint';fb.innerHTML='💡 Có việc em chọn mà hai bạn chưa làm. Hãy nhớ lại: có ai ngồi chép hay nghe đọc không?'}
+    else{fb.className='fb hint';fb.innerHTML='💡 Còn thiếu một vài việc nữa! Hãy nhớ lại các bước trên màn hình khám phá.'}
+  });
+});
+
+add('2.4 Tạo ra gì?',2,2,quizSingle(4,'Cuối cùng các em tạo ra điều gì?',['Một điểm số','Một bài chép lại','Một sản phẩm'],'C','👍 Đúng! Ba lời khuyên của hai bạn chính là một <b>sản phẩm</b>.','💡 Ba lời khuyên em vừa viết là gì? Điểm số hay một thứ mình tự tạo ra?'));
+
+add('2.5 Sơ đồ hành trình',2,1,box=>{
+  box.append(html(`<section class="card center"><h2>Hành trình hai bạn vừa đi qua</h2>
+    ${flow([
+      {icon:'🌍',title:'VẤN ĐỀ',c:'blue'},{icon:'🎯',title:'NHIỆM VỤ',c:'orange'},{icon:'🔍',title:'KHÁM PHÁ',c:'green'},{icon:'📚',title:'NGUỒN HỌC',c:'purple'},{icon:'🚀',title:'SẢN PHẨM',c:'pink'}])}
+    <div class="big-reveal">💡 Đây chính là một hành trình WebQuest.</div></section>`));
+  nextBar(box,'🗺️ Giải mã WebQuest ➜');
+});
+
+/* ===== PHẦN 3 ===== */
+add('3.1 WebQuest là gì?',3,2,box=>{
+  const tools=['📄 Giấy','🧠 Mindmap','🌐 Website','🧩 Google Sites','🗺️ OKMindmap','🖼️ Slide','🛠️ Công cụ số khác'];
+  box.append(html(`<section class="card center"><h2>🗺️ WEBQUEST LÀ GÌ?</h2>
+    <div class="def">WebQuest là một <u>hành trình học tập</u>, trong đó người học nhận một nhiệm vụ, khám phá thông tin, thực hiện các bước và tạo ra một sản phẩm.</div>
+    <div class="shout">WEBQUEST KHÔNG CHỈ LÀ WEBSITE</div>
+    <div class="tools">${tools.map(t=>`<span class="tool">${t}</span>`).join('')}</div>
+    <p class="lead strong" style="margin-top:14px">Điều quan trọng nhất là cách chúng ta <u>thiết kế hành trình học tập</u>.</p></section>`));
+  nextBar(box,'Xem 5 thành phần ➜');
+});
+
+add('3.2 Năm thành phần',3,2,box=>{
+  box.append(html(`<section class="card center"><h2>5 THÀNH PHẦN ĐẦU TIÊN</h2>
+    <div class="comp">${COMP.map((c,i)=>`<div class="cc c-${c.c}" style="animation-delay:${i*.2}s"><div class="fi">${c.icon}</div><b>${c.name}</b><div class="q">${c.q}</div><small>${c.d}</small></div>`).join('')}</div>
+    <p class="think">Hai bạn đọc kĩ: ngay sau đây sẽ thử sắp xếp lại!</p></section>`));
+  nextBar(box,'🧩 Thử sắp xếp ➜');
+});
+
+add('3.3 Sắp xếp thứ tự (kéo thả)',3,1,box=>{
+  const hintFor={
+    intro:'💡 Muốn học thì trước hết phải biết có <b>vấn đề gì</b>. Phần nào mở đầu hành trình?',
+    task:'💡 Biết vấn đề rồi, người học cần biết mình <b>phải làm gì</b>.',
+    proc:'💡 Biết phải làm gì rồi, người học cần biết <b>làm bằng cách nào</b>.',
+    src:'💡 Khi đang làm, người học cần biết <b>có thể học từ đâu</b>.',
+    prod:'💡 Cuối hành trình thì sao? <b>Đích đến</b> là gì?'};
+  const sec=html('<section class="card"><h2>Kéo 5 thành phần vào đúng thứ tự của hành trình</h2></section>');
+  box.append(sec);
+  const nb=nextBar(box,'Tiếp tục ➜',true);
+  dnd(sec,{
+    zcls:'rows',tip:'💬 Kéo thẻ vào bước 1 → 5.',shuffle:true,
+    zones:COMP.map((c,i)=>({id:c.k,label:'Bước '+(i+1)})),
+    items:COMP.map(c=>({id:c.k,zone:c.k,html:`${c.icon} ${c.name}<small>${c.q}</small>`,ok:`👍 Đúng rồi! ${c.icon} ${c.name} – ${c.q}`,hint:hintFor[c.k]})),
+    onDone(){nb.disabled=false}
+  });
+});
+
+add('3.4 Kể lại không nhìn màn hình',3,0,box=>{
+  const sec=html(`<section class="card center"><h2>🙈 Không nhìn vào màn hình!</h2>
+    <div id="area"></div></section>`);
+  box.append(sec);
+  const nb=nextBar(box,'Làm người thiết kế ➜',true);
+  const area=$('#area',sec);
+  const diagram=()=>flow(COMP.map(c=>({icon:c.icon,title:c.name,sub:c.q,c:c.c})));
+  const phase1=()=>{
+    area.innerHTML=`<p class="lead">Không nhìn vào màn hình, hai bạn có thể kể lại 5 phần này cho nhau không?</p>${diagram()}
+      <div class="bar"><button class="btn alt big" id="hide" type="button">🙈 ẨN SƠ ĐỒ</button></div>`;
+    $('#hide').addEventListener('click',phase2);
+  };
+  const phase2=()=>{
+    area.innerHTML=`<div class="hidebox">🙈 Sơ đồ đã được ẩn…</div>
+      <p class="lead"><b>${esc(S.n1)}</b> hãy kể lại. Sau đó <b>${esc(S.n2)}</b> bổ sung.</p>
+      <div class="timer" id="tm"><span>0:45</span></div>
+      <div class="bar"><button class="btn big" id="show" type="button" disabled>👀 XEM LẠI</button>
+      <button class="btn ghost sm" id="skip" type="button">⏩ GV bỏ qua</button></div>`;
+    const sh=$('#show');
+    const c=countdown($('#tm'),45,null,()=>{sh.disabled=false});
+    $('#skip').addEventListener('click',()=>c.skip());
+    sh.addEventListener('click',()=>{
+      area.innerHTML=`<p class="lead strong">Hai bạn đã nhớ đủ chưa? Đối chiếu nhé!</p>${diagram()}`;
+      nb.disabled=false;
+    });
+  };
+  phase1();
+},{banner:'🗣️ Cả hai bạn cùng kể lại cho nhau nghe'});
+
+/* ===== PHẦN 4 ===== */
+add('4.1 Thử làm người thiết kế',4,2,box=>{
+  const hints={
+    A:'💡 Nội dung này nói về một việc đang xảy ra – một <b>vấn đề</b>. Nó thuộc phần nào?',
+    B:'💡 Đây là việc người học <b>phải làm</b>. Phần nào trả lời “phải làm gì?”',
+    C:'💡 Có các bước nối nhau bằng mũi tên – đây là <b>cách làm</b>.',
+    D:'💡 Đây là những nơi để <b>tìm thông tin</b>.',
+    E:'💡 Đây là thứ em có được ở <b>cuối hành trình</b>.'};
+  const sec=html(`<section class="card"><h2>🗑️ GIỮ LỚP HỌC SẠCH – Em là người thiết kế</h2>
+    <p class="think">Có 5 nội dung lộn xộn. Hãy kéo từng nội dung vào đúng phần của WebQuest.</p></section>`);
+  box.append(sec);
+  const nb=nextBar(box,'Tạo WebQuest của em ➜',true);
+  const wrap=html('<div></div>');sec.append(wrap);
+  dnd(wrap,{
+    zcls:'rows',shuffle:true,tip:'💬 Hãy thử xem mỗi nội dung thuộc phần nào.',
+    zones:COMP.map(c=>({id:c.k,label:`${c.icon} ${c.name.charAt(0)+c.name.slice(1).toLowerCase()}`})),
+    items:[
+      {id:'A',zone:'intro',html:'Trong lớp vẫn còn giấy rác sau giờ học.'},
+      {id:'B',zone:'task',html:'Thiết kế một poster kêu gọi các bạn giữ vệ sinh.'},
+      {id:'C',zone:'proc',html:'Quan sát → tìm nguyên nhân → nghĩ giải pháp → thiết kế.'},
+      {id:'D',zone:'src',html:'Quan sát lớp, nội quy, hình ảnh tham khảo.'},
+      {id:'E',zone:'prod',html:'Một poster tuyên truyền.'}
+    ].map(i=>Object.assign(i,{ok:'👍 Đúng rồi!',hint:hints[i.id]})),
+    onDone(){
+      const r=html(`<div class="center">${flow([
+        {icon:'🌍',title:'Lớp học còn giấy rác',c:'blue'},{icon:'🎯',title:'Thiết kế poster',c:'orange'},
+        {icon:'🔍',title:'Quan sát → Suy nghĩ → Thiết kế',c:'green'},{icon:'📚',title:'Lớp học + Nội quy + Hình ảnh',c:'purple'},{icon:'🚀',title:'Poster',c:'pink'}])}
+        <div class="note">Bây giờ các em đã xem WebQuest của người khác. <b>Đến lúc tạo WebQuest của chính mình.</b></div></div>`);
+      sec.append(r);nb.disabled=false;r.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+  });
+});
+
+/* ===== PHẦN 5 ===== */
+add('5.0 Tạm rời máy tính',5,0,box=>{
+  document.body.classList.add('night');
+  box.append(html(`<section class="card center leave"><div class="bigemoji">📴</div>
+    <h1>TẠM RỜI MÁY TÍNH</h1>
+    <p class="lead">Phần tiếp theo <b>không làm trên máy</b>.</p>
+    <p class="lead">Mỗi bạn hãy lấy <b>tập</b> và <b>bút</b> ra. ✏️📒</p>
+    <p class="lead strong">Từ bước này, MỖI HỌC SINH LÀM MỘT SẢN PHẨM RIÊNG.</p></section>`));
+  nextBar(box,'✅ Em đã lấy tập và bút');
+},{banner:'✏️ Mỗi bạn một sản phẩm riêng trong tập của mình'});
+
+add('5.1 Nhớ lại',5,0,box=>{
+  box.append(html(`<section class="card center"><h2>🧠 Hoạt động 1 – Nhớ lại</h2>
+    <p class="lead">Hãy thử tự nhớ: <b>WebQuest có những phần nào?</b></p>
+    <p class="lead strong">✏️ Viết từ trí nhớ vào tập (khoảng một phút). Chưa xem gợi ý nhé!</p>
+    <div class="timer" id="tm"><span>1:00</span></div><div id="ans"></div></section>`));
+  const bar=html('<div class="bar"></div>');
+  const hintBtn=html('<button class="btn alt big" type="button" disabled>💡 XEM GỢI Ý</button>');
+  const skip=html('<button class="btn ghost sm" type="button">⏩ GV bỏ qua</button>');
+  bar.append(hintBtn,skip);box.append(bar);
+  const nb=nextBar(box,'Vẽ WebQuest ➜',true);
+  const c=countdown($('#tm'),60,null,()=>{hintBtn.disabled=false});
+  skip.addEventListener('click',()=>c.skip());
+  hintBtn.addEventListener('click',()=>{
+    $('#ans').innerHTML=`<div class="chain">${COMP.map((x,i)=>`<span class="it">${x.icon} ${x.name.charAt(0)+x.name.slice(1).toLowerCase()}</span>${i<4?'<span class="ar">–</span>':''}`).join('')}</div>
+      <p class="small">Em nhớ được mấy phần? Bổ sung phần còn thiếu vào tập bằng bút khác màu.</p>`;
+    nb.disabled=false;hintBtn.disabled=true;
+  });
+},{banner:'✏️ Mỗi bạn tự nhớ và tự viết trong tập của mình'});
+
+add('5.2 Vẽ khung WebQuest',5,0,box=>{
+  const col={blue:'#4f7cff',orange:'#ff9a3c',green:'#25b374',purple:'#8a63f6',pink:'#e8559a'};
+  const node=(x,y,c)=>`<rect x="${x}" y="${y}" width="240" height="76" rx="22" fill="${col[c.c]}"/>
+    <text x="${x+120}" y="${y+34}" text-anchor="middle" font-size="22">${c.icon}</text>
+    <text x="${x+120}" y="${y+62}" text-anchor="middle" font-size="19">${c.name}</text>`;
+  box.append(html(`<section class="card"><h2 class="center">📒 Hoạt động 2 – Trong tập, hãy vẽ:</h2>
+    <svg class="mm" viewBox="0 0 800 520" role="img" aria-label="Gợi ý sơ đồ mindmap WebQuest của em">
+      <g stroke-width="7" stroke-linecap="round" fill="none">
+        <path d="M400 240 L140 80" stroke="${col.blue}"/><path d="M400 240 L660 80" stroke="${col.orange}"/>
+        <path d="M400 240 L140 370" stroke="${col.green}"/><path d="M400 240 L660 370" stroke="${col.purple}"/>
+        <path d="M400 240 L400 450" stroke="${col.pink}"/></g>
+      ${node(20,42,COMP[0])}${node(540,42,COMP[1])}${node(20,332,COMP[2])}${node(540,332,COMP[3])}${node(280,440,COMP[4])}
+      <ellipse cx="400" cy="240" rx="130" ry="62" fill="#ffc928"/>
+      <text x="400" y="234" text-anchor="middle" font-size="24" style="fill:#3b2a00">🌟 WEBQUEST</text>
+      <text x="400" y="264" text-anchor="middle" font-size="24" style="fill:#3b2a00">CỦA EM</text>
+    </svg>
+    <div class="dd"><ul class="y"><li>✅ TỪ KHÓA</li><li>✅ HÌNH ẢNH · ICON</li><li>✅ MŨI TÊN · MÀU SẮC</li><li>✅ Ý CỦA CHÍNH EM</li></ul>
+    <ul class="n"><li>❌ CHÉP NGUYÊN VĂN TỪ MÀN HÌNH</li><li class="small">Có thể điều chỉnh bố cục cho đẹp và dễ vẽ.</li></ul></div></section>`));
+  const nb=nextBar(box,'Chọn chủ đề ➜',true);
+  const t=html('<button class="tick" type="button">☐ Em đã vẽ xong khung</button>');
+  $('.bar',box).prepend(t);
+  t.addEventListener('click',()=>{const on=t.classList.toggle('on');t.textContent=(on?'☑':'☐')+' Em đã vẽ xong khung';nb.disabled=!on});
+},{banner:'✏️ Vẽ vào tập của mình – không chép nguyên văn'});
+
+add('5.3 Chọn chủ đề',5,0,box=>{
+  const T=[['🌱','Bảo vệ cây xanh'],['🗑️','Không xả rác'],['🔐','Mật khẩu an toàn'],['💻','Sử dụng máy tính đúng cách'],['📱','An toàn trên Internet'],['📚','Cách học tốt'],['🤝','Giúp đỡ bạn bè'],['💧','Tiết kiệm nước']];
+  box.append(html(`<section class="card"><h2 class="center">🎯 Hoạt động 3 – Chọn một chủ đề thật đơn giản</h2>
+    <div class="topics">${T.map(t=>`<button type="button" class="topic" data-t="${t[1]}"><span>${t[0]}</span>${t[1]}</button>`).join('')}</div>
+    <label>Hoặc: một vấn đề em quan tâm<input id="own" maxlength="60" placeholder="Em muốn làm WebQuest về…"></label></section>`));
+  const nb=nextBar(box,'Điền 5 nhánh ➜',true);
+  const own=$('#own');
+  const setTopic=v=>{S.topic=v;save();nb.disabled=!v};
+  box.querySelectorAll('.topic').forEach(b=>{
+    if(S.topic===b.dataset.t)b.classList.add('sel');
+    b.addEventListener('click',()=>{box.querySelectorAll('.topic').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');own.value='';setTopic(b.dataset.t)});
+  });
+  own.addEventListener('input',()=>{box.querySelectorAll('.topic').forEach(x=>x.classList.remove('sel'));setTopic(own.value.trim().length>=2?own.value.trim():'')});
+  nb.disabled=!S.topic;
+},{banner:'✏️ Mỗi bạn tự chọn chủ đề của mình'});
+
+add('5.4 Điền 5 nhánh',5,0,box=>{
+  const cards=[
+    {c:COMP[0],lim:'1–2 câu / vài từ khóa',ex:'Có vấn đề gì?'},
+    {c:COMP[1],lim:'1 câu',ex:'Người học phải làm gì?'},
+    {c:COMP[2],lim:'3 bước',ex:'TÌM HIỂU ➜ SUY NGHĨ ➜ TẠO SẢN PHẨM'},
+    {c:COMP[3],lim:'2–3 nguồn',ex:'Người học tìm thông tin từ đâu?'},
+    {c:COMP[4],lim:'chọn một',ex:'poster · mindmap · video · bài viết · chương trình · tranh · khác'}];
+  box.append(html(`<section class="card"><h2>✏️ Hoạt động 4 – Điền 5 nhánh cho chủ đề: <span style="color:var(--green)">${esc(S.topic||'…')}</span></h2>
+    <div class="fill">${cards.map((x,i)=>`<div class="fcard" data-i="${i}"><div class="ic">${x.c.icon}</div>
+      <div><b>${x.c.name}</b><span class="lim">${x.lim}</span><div class="ex">${x.ex}</div></div>
+      <button type="button" class="tick">☐ Đã vẽ</button></div>`).join('')}</div>
+    <div class="rules"><span>KHÔNG CẦN DÀI</span><span>KHÔNG CẦN HOÀN HẢO</span><span>KHÔNG CẦN LÀ WEBSITE</span></div>
+    <div class="hint-box">Người khác nhìn vào phải hiểu: ❶ Tôi phải học điều gì? ❷ Tôi phải làm gì? ❸ Tôi sẽ tạo được gì?</div></section>`));
+  const nb=nextBar(box,'Đổi tập cho bạn ➜',true);
+  box.querySelectorAll('.fcard').forEach(f=>{
+    const t=$('.tick',f);
+    t.addEventListener('click',()=>{const on=t.classList.toggle('on');t.textContent=(on?'☑':'☐')+' Đã vẽ';f.classList.toggle('done',on);nb.disabled=!(box.querySelectorAll('.tick.on').length===5)});
+  });
+},{banner:'✏️ Vẽ vào tập – chỉ từ khóa và hình, không chép dài'});
+
+add('5.5 Đổi tập',5,0,box=>{
+  box.append(html(`<section class="card center"><div class="bigemoji bounce">👥</div>
+    <h2>Hoạt động 5 – Đổi WebQuest cho bạn bên cạnh</h2>
+    <p class="lead"><b>${esc(S.n1)}</b> xem WebQuest của <b>${esc(S.n2)}</b> &nbsp;·&nbsp; <b>${esc(S.n2)}</b> xem WebQuest của <b>${esc(S.n1)}</b>.</p>
+    <p class="lead strong">Mỗi bạn nói với bạn mình:</p>
+    <ul class="starters"><li>👍 <b>Tôi hiểu</b> nhiệm vụ của bạn…</li><li>🤔 <b>Tôi chưa hiểu</b> chỗ…</li><li>💡 <b>Tôi đề xuất</b>…</li></ul>
+    <div class="note">Không chấm điểm nhau. Chỉ giúp nhau làm rõ ý tưởng.</div></section>`));
+  const nb=nextBar(box,'Giải thích WebQuest ➜',true);
+  const t=html('<button class="tick" type="button">☐ Hai bạn đã góp ý cho nhau</button>');
+  $('.bar',box).prepend(t);
+  t.addEventListener('click',()=>{const on=t.classList.toggle('on');t.textContent=(on?'☑':'☐')+' Hai bạn đã góp ý cho nhau';nb.disabled=!on});
+},{banner:'👥 Hai bạn đổi tập với nhau'});
+
+add('5.6 Giải thích',5,0,box=>{
+  box.append(html(`<section class="card center"><h2>🗣️ Hoạt động 6 – Giải thích WebQuest của em</h2>
+    <p class="lead">Mỗi bạn có khoảng <b>1 phút</b> để giải thích.</p>
+    <ul class="starters" style="text-align:left"><li>WebQuest của em nói về…</li><li>Vấn đề là…</li><li>Người học phải…</li><li>Họ sẽ làm…</li><li>Và cuối cùng tạo ra…</li></ul>
+    <div class="timer" id="tm"><span>1:00</span></div><p class="lead strong" id="who2"></p></section>`));
+  const bar=html('<div class="bar"></div>');
+  const start=html('<button class="btn alt big" type="button"></button>');
+  const skip=html('<button class="btn ghost sm" type="button">⏩ GV bỏ qua</button>');
+  bar.append(start,skip);box.append(bar);
+  const nb=nextBar(box,'Làm Exit Ticket ➜',true);
+  const names=[S.n1,S.n2];let k=0,cur=null;
+  const label=()=>{start.textContent=k<2?`▶️ ${names[k]} bắt đầu nói`:'✔ Cả hai bạn đã nói xong';start.disabled=k>=2};
+  label();
+  start.addEventListener('click',()=>{
+    start.disabled=true;$('#who2').textContent='🎤 '+names[k]+' đang giải thích…';
+    cur=countdown($('#tm'),60,null,()=>{k++;$('#who2').textContent='';label();if(k>=2)nb.disabled=false});
+  });
+  skip.addEventListener('click',()=>{if(cur)cur.skip()});
+},{banner:'🗣️ Lần lượt từng bạn giải thích bằng lời của mình'});
+
+add('5.7 Exit Ticket',5,0,box=>{
+  const holder=html('<div></div>');box.append(holder);
+  const nb=nextBar(box,'Xem màn hình kết thúc ➜',true);
+  const names=[S.n1,S.n2];
+  function ticket(k){
+    const ans=S.exit[k]||{};
+    holder.innerHTML='';
+    const sec=html(`<section class="card"><div class="mini-tabs">${names.map((n,i)=>`<span class="${i===k?'on':''}">${esc(n)}</span>`).join('')}</div>
+      <h2>🎟️ Exit Ticket của ${esc(names[k])}</h2>
+      <h3>Câu 1. WebQuest giống nhất với:</h3><div class="opts grid" id="q1"></div><div class="fb" id="f1"></div>
+      <h3>Câu 2. WebQuest có bắt buộc phải là website không?</h3><div class="opts grid" id="q2"></div><div class="fb" id="f2"></div>
+      <h3>Câu 3. Em đã vẽ WebQuest đầu tiên chưa?</h3><div class="opts grid" id="q3"></div>
+      <h3>Câu 4. Em tự đánh giá:</h3><div class="stars" id="q4"></div>
+      <div class="bar"><button class="btn" id="sub" type="button" disabled>${k===0?'Nộp và đến bạn tiếp theo ➜':'Nộp Exit Ticket ✔'}</button></div></section>`);
+    holder.append(sec);
+    const fin=()=>{$('#sub').disabled=!(ans.q1&&ans.q2&&ans.q3&&ans.q4)};
+    const mk=(id,opts,key,correct,fbId,msgs)=>{
+      opts.forEach((t,i)=>{
+        const k2=typeof t==='string'?'ABCD'[i]:t[0];const txt=typeof t==='string'?t:t[1];
+        const b=html(`<button type="button" class="opt">${typeof t==='string'?`<span class="k">${k2}</span>`:''}${txt}</button>`);
+        if(ans[key]===k2)b.classList.add('sel');
+        b.addEventListener('click',()=>{
+          $('#'+id).querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');ans[key]=k2;
+          if(fbId){const f=$('#'+fbId);const ok=k2===correct;f.className='fb '+(ok?'ok':'hint');f.innerHTML=ok?msgs[0]:msgs[1]}
+          fin();
+        });
+        $('#'+id).append(b);
+      });
+    };
+    mk('q1',['Một bài đọc.','Một hành trình học tập.','Một bài kiểm tra.','Một trang web.'],'q1','B','f1',['👍 Đúng! WebQuest là một hành trình học tập.','💡 Hãy nhớ lại: em đã đi qua vấn đề → nhiệm vụ → khám phá → sản phẩm. Đó là gì?']);
+    mk('q2',['Có','Không'],'q2','B','f2',['👍 Đúng! WebQuest có thể vẽ trên giấy, mindmap, slide… không nhất thiết là website.','💡 Hôm nay em vừa vẽ WebQuest ở đâu? Trong tập!']);
+    mk('q3',[['xong','✅ Đã xong'],['gan','🟡 Gần xong'],['cantro','🔴 Cần hỗ trợ']],'q3',null,null,null);
+    const st=['⭐ Em còn chưa hiểu.','⭐⭐ Em bắt đầu hiểu.','⭐⭐⭐ Em hiểu WebQuest là gì.','⭐⭐⭐⭐ Em có thể tự tạo một WebQuest đơn giản.','⭐⭐⭐⭐⭐ Em có thể giải thích cho bạn khác.'];
+    st.forEach((t,i)=>{
+      const b=html(`<button type="button" class="star">${t}</button>`);
+      if(ans.q4===i+1)b.classList.add('sel');
+      b.addEventListener('click',()=>{$('#q4').querySelectorAll('.star').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');ans.q4=i+1;fin()});
+      $('#q4').append(b);
+    });
+    fin();
+    $('#sub').addEventListener('click',()=>{
+      S.exit[k]=ans;save();
+      if(k===0)ticket(1);else{holder.innerHTML='<section class="card center"><div class="bigemoji">🎟️</div><h2>Cả hai bạn đã nộp Exit Ticket!</h2></section>';nb.disabled=false}
+    });
+  }
+  ticket(0);
+},{banner:'🎟️ Mỗi bạn trả lời Exit Ticket của riêng mình'});
+
+add('5.8 Kết thúc',5,0,box=>{
+  document.body.classList.remove('night');
+  confetti();
+  box.append(html(`<section class="card center"><div class="bigemoji bounce">🎉</div>
+    <h1>WEBQUEST ĐẦU TIÊN CỦA EM ĐÃ RA ĐỜI!</h1>
+    <p class="lead">Em vừa đi qua một hành trình rất đặc biệt:</p>
+    <div class="chain"><span class="it">👀 Trải nghiệm</span><span class="ar">➜</span><span class="it">🧠 Nhớ lại</span><span class="ar">➜</span><span class="it">✏️ Vẽ lại</span><span class="ar">➜</span><span class="it">💡 Tạo ý tưởng</span><span class="ar">➜</span><span class="it">🗣️ Giải thích</span></div>
+    <p class="closing">Máy tính giúp em trải nghiệm.<br>Nhưng chính việc em <u>suy nghĩ, tự vẽ và tự giải thích</u> mới giúp kiến thức trở thành của em.</p>
+    <p class="finale">🌱 HÔM NAY CHƯA CẦN HOÀN HẢO.<br>CHỈ CẦN EM HIỂU VÀ TẠO ĐƯỢC WEBQUEST ĐẦU TIÊN.</p>
+    <p class="teacher">📒 Mỗi học sinh có một trang “WebQuest đầu tiên của em” trong tập.</p></section>`));
+});
+
+/* ---------- điều hướng ---------- */
+function go(i){
+  i=Math.max(0,Math.min(screens.length-1,i));
+  S.idx=i;if(i>1)S.last=Math.max(S.last||0,i);
+  save();render();window.scrollTo({top:0});
+}
+function render(){
+  clearTimers();
+  document.body.classList.remove('night');
+  document.querySelectorAll('.confetti').forEach(x=>x.remove());
+  const scr=screens[S.idx];
+  const main=$('#stage');main.innerHTML='';
+  // tiến trình
+  const pg=$('#progress');
+  if(scr.stage===0){pg.className='hidden'}
+  else{
+    pg.className='';
+    // tính tiến độ trong giai đoạn
+    const inStage=screens.filter(s=>s.stage===scr.stage);
+    const w=Math.round(((inStage.indexOf(scr)+1)/inStage.length)*100);
+    pg.innerHTML=STAGES.map((n,i)=>{
+      const cls=(i+1<scr.stage)?'done':(i+1===scr.stage?'cur':'');
+      return `<div class="pstep ${cls}" ${cls==='cur'?`style="--w:${w}%"`:''}><div class="bar"><i></i></div>${i+1}. ${n}</div>`;
+    }).join('');
+  }
+  // banner đổi vai
+  const b=$('#banner');b.innerHTML='';
+  if(scr.role){
+    const a=scr.role===1?S.n1:S.n2,o=scr.role===1?S.n2:S.n1;
+    b.append(html(`<div class="role">🖱️ <b>${esc(a)}</b> thao tác &nbsp;·&nbsp; 👀 <b>${esc(o)}</b> quan sát và giải thích</div>`));
+    if(prevRole&&prevRole!==scr.role)b.append(html('<div class="swap">🔄 Hãy đổi vai cho bạn bên cạnh!</div>'));
+    prevRole=scr.role;
+  }else if(scr.banner){
+    b.append(html(`<div class="role solo">${scr.banner}</div>`));
+  }
+  $('#who').textContent=S.n1&&S.n2&&scr.stage>0?`${S.n1} & ${S.n2}${S.cls?' · Lớp '+S.cls:''}`:'';
+  $('#jump').value=String(S.idx);
+  scr.render(main);
+}
+const jump=$('#jump');
+screens.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=s.t;jump.append(o)});
+jump.addEventListener('change',()=>{
+  if(jump.value>1&&!(S.n1&&S.n2)){S.n1=S.n1||'Bạn 1';S.n2=S.n2||'Bạn 2'}
+  go(parseInt(jump.value,10));
+});
+$('#reset').addEventListener('click',()=>{
+  if(confirm('Làm lại từ đầu? Dữ liệu đã lưu trên máy này sẽ bị xóa.')){
+    S=fresh();try{localStorage.removeItem(KEY)}catch(e){}prevRole=0;go(0);
+  }
+});
+render();
+})();
+</script>
+</body>
+</html>
